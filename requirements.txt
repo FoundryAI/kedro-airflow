@@ -1,4 +1,4 @@
 Flask==1.1.0
 apache-airflow>1.10.3
 python-slugify
-git+https://github.com/FoundryAI/kedro@8a91781#egg=kedro
+kedro>=0.14.2
