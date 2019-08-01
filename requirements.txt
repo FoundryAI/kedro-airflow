@@ -1,5 +1,5 @@
 
-Flask==1.0.3
+Flask>=1.1.0
 # Airflow does not pin Flask, but new Flask 1.1.0 caused dependency conflicts with Airflow.
 # pinning Flask==1.0.3 can be removed after Airflow 1.10.4 is released
 # https://issues.apache.org/jira/browse/AIRFLOW-4903?page=com.atlassian.jira.plugin.system.issuetabpanels%3Aall-tabpanel
