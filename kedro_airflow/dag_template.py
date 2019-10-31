@@ -25,25 +25,29 @@
 #
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 import sys
 from datetime import datetime, timedelta
 
 from airflow import DAG
-from airflow.operators.bash_operator import BashOperator
-from airflow.operators.python_operator import PythonOperator
 from slugify import slugify
 
 from kedro_airflow.runner import AirflowRunner
 
+{%- if context_compatibility_mode %}
+from kedro.cli.cli import get_project_context  # isort:skip
+{%- else %}
+from kedro.context import load_context  # isort:skip
+{%- endif %}
+
+{% if context_compatibility_mode %}
+{#- NOTE: kedro_cli needs to be importable for kedro<0.15.0 #}
+# Make `kedro_cli` importable
+sys.path.append("{{ project_path }}")
+{%- else %}
+{#- NOTE: There's a bug in kedro==0.15.0, failing to add this path in `load_context` #}
 # Get our project source onto the python path
 sys.path.append("{{ project_path }}/src")
-
-# fmt: off
-{{import_get_config}}  # isort:skip
-{{import_create_catalog}}  # isort:skip
-{{import_create_pipeline}}  # isort:skip
-# fmt: on
+{%- endif %}
 
 # Path to Kedro project directory
 project_path = "{{ project_path }}"
@@ -68,7 +72,7 @@ def operator_specific_arguments(task_id):
     return {}
 
 
-# Injest Airflow's context, may modify the data catalog as necessary
+# Inject Airflow's context, may modify the data catalog as necessary
 def process_context(data_catalog, **kwargs):
     # drop unpicklable things
     for key in ["dag", "conf", "macros", "task", "task_instance", "ti", "var"]:
@@ -86,9 +90,15 @@ dag = DAG(
     schedule_interval=timedelta(days=1),
 )
 
-config = get_config(project_path)
-data_catalog = create_catalog(config)
-pipeline = create_pipeline()
+{% if context_compatibility_mode %}
+config = get_project_context('get_config')(project_path)
+data_catalog = get_project_context('create_catalog')(config)
+pipeline = get_project_context('create_pipeline')()
+{%- else %}
+_context = load_context(project_path)
+data_catalog = _context.catalog
+pipeline = _context.pipeline
+{%- endif %}
 
 runner = AirflowRunner(
     dag=dag,

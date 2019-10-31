@@ -28,24 +28,16 @@
 import os
 from pathlib import Path
 
-from kedro_airflow.plugin import commands, import_line
+from kedro_airflow.plugin import commands
 
 
 def a_function():  # pragma: no cover
     pass
 
 
-def test_import_line(mocker):
-    mocker.patch("kedro_airflow.plugin.get_project_context", return_value=a_function)
-    assert import_line("bob") == "from tests.test_plugin import a_function as bob"
-
-
 def test_create_airflow_dag(cli_runner, mocker):
     project_context = {
         "project_path": Path.cwd(),
-        "get_config": a_function,
-        "create_catalog": a_function,
-        "create_pipeline": a_function,
         "project_name": "Hello '-\u2603_-' world !!!",
     }
     mocker.patch("kedro_airflow.plugin.get_project_context", project_context.get)

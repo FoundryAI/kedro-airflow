@@ -44,15 +44,6 @@ def commands():
     pass
 
 
-def import_line(name):
-    """generate an import line for something in the project_context"""
-    func = get_project_context(name)
-    res = "from {} import {}".format(func.__module__, func.__name__)
-    if func.__name__ != name:
-        res = "{} as {}".format(res, name)
-    return res
-
-
 @commands.group(name="airflow")
 def airflow_commands():
     """Run project with Airflow"""
@@ -76,13 +67,18 @@ def create():
     template = Template(
         src_file.read_text(encoding="utf-8"), keep_trailing_newline=True
     )
+
+    try:
+        from kedro.context import load_context  # noqa:F401 pylint: disable=unused-import
+        context_compatibility_mode = False
+    except ImportError:  # pragma: no coverage
+        context_compatibility_mode = True
+
     dest_file.write_text(
         template.render(
             project_name=get_project_context("project_name"),
-            import_get_config=import_line("get_config"),
-            import_create_catalog=import_line("create_catalog"),
-            import_create_pipeline=import_line("create_pipeline"),
             project_path=get_project_context("project_path"),
+            context_compatibility_mode=context_compatibility_mode,
         ),
         encoding="utf-8",
     )
