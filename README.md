@@ -43,4 +43,10 @@ For more information about the DAGs folder, please visit [Airflow documentation]
 ### Step 3: Package and install the Kedro pipeline in the Airflow executor's environment
 
 After generating and deploying the DAG file, you will then need to package and install the Kedro pipeline into the Airflow executor's environment.
-Please visit the guide to [deploy Kedro as a Python package](https://kedro.readthedocs.io/en/latest/10_deployment/01_single_machine.html#package-based) for more details.
+Please visit the guide to [deploy Kedro as a Python package](https://kedro.readthedocs.io/en/stable/10_deployment/02_single_machine.html#package-based) for more details.
+
+### FAQ
+
+#### What if my DAG file is in a different directory to my project folder?
+
+By default the generated DAG file is configured to live in the same directory as your project as per this [template](https://github.com/quantumblacklabs/kedro-airflow/blob/master/kedro_airflow/airflow_dag_template.j2#L44). If your DAG file is located in a different directory to your project, you will need to tweak this  manually after running the `kedro airflow create` command.

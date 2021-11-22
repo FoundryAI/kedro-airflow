@@ -46,10 +46,6 @@ jobs:
           name: Run all end to end tests
           command: |
             make e2e-tests
-      - run:
-          name: Check for legal compliance
-          command: |
-            make legal
 
   build_37:
     <<: *DEFAULT
