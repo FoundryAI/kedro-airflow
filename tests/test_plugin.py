@@ -28,6 +28,6 @@ def test_create_airflow_dag(mocker, cli_runner, metadata):
     assert dag_file.exists()
 
     expected_airflow_dag = 'tasks["node0"] >> tasks["node1"]'
-    with open(dag_file, "r") as f:
+    with open(dag_file, "r", encoding="utf-8") as f:
         dag_code = [line.strip() for line in f.read().splitlines()]
     assert expected_airflow_dag in dag_code
